@@ -17,7 +17,7 @@ endif()
 ################################################################################
 
 set(SOURCES
-    #src/tsetlini_state_json.cpp
+    src/poc.cpp
 )
 
 add_library( ringbeller_ObjLib OBJECT src/dummy.cpp )
@@ -33,6 +33,11 @@ target_include_directories(ringbeller_ObjLib
 
 target_compile_features(ringbeller_ObjLib PRIVATE cxx_rvalue_references)
 
+target_include_directories( ringbeller_ObjLib PRIVATE ${Boost_INCLUDE_DIRS})
+
+target_compile_features( ringbeller_ObjLib
+    PUBLIC $<TARGET_PROPERTY:Boost::system,INTERFACE_COMPILE_FEATURES> )
+
 ################################################################################
 
 add_library( ringbeller SHARED src/dummy.cpp )
@@ -45,6 +50,7 @@ target_include_directories( ringbeller
         $<TARGET_PROPERTY:ringbeller_ObjLib,INTERFACE_INCLUDE_DIRECTORIES> )
 target_compile_features( ringbeller
     PUBLIC $<TARGET_PROPERTY:ringbeller_ObjLib,INTERFACE_COMPILE_FEATURES> )
+target_link_libraries( ringbeller PUBLIC Boost::system )
 
 ################################################################################
 
@@ -58,6 +64,7 @@ target_include_directories( ringbeller_static
         $<TARGET_PROPERTY:ringbeller_ObjLib,INTERFACE_INCLUDE_DIRECTORIES> )
 target_compile_features( ringbeller_static
     PUBLIC $<TARGET_PROPERTY:ringbeller_ObjLib,INTERFACE_COMPILE_FEATURES> )
+target_link_libraries( ringbeller_static PUBLIC Boost::system )
 
 ################################################################################
 

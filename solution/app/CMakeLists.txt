@@ -17,7 +17,6 @@ include_directories(
 include_directories(
   "$<TARGET_PROPERTY:spdlog,MY_INCLUDE_DIRS>" )
 
-find_package( Boost 1.41.0 REQUIRED )
-target_include_directories( ${APP} PUBLIC ${Boost_INCLUDE_DIRS})
-
 target_compile_definitions( ${APP} PRIVATE "$<TARGET_PROPERTY:fmt,INTERFACE_COMPILE_DEFINITIONS>" )
+
+target_link_libraries( ${APP} ringbeller_static )
