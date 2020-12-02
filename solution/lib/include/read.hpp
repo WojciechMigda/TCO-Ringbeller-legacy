@@ -24,6 +24,33 @@ namespace Ringbeller
 {
 
 
+/**
+ *  Read a complete message from a stream.
+ *
+ *  This function is used to read a complete message from a stream.
+ *  The call will block until one of the following conditions is true:
+ *
+ *  @li The entire message is read.
+ *
+ *  @li An error occurs.
+ *
+ *  @param stream The stream from which the data is to be read.
+ *  The type must support the @b SyncReadStream concept.
+ *
+ *  @param buffer A @b DynamicBuffer holding additional bytes
+ *  read by the implementation from the stream. This is both
+ *  an input and an output parameter; on entry, any data in the
+ *  dynamic buffer's input sequence will be given to the parser
+ *  first.
+ *
+ *  @param msg An object in which to store the message contents.
+ *  This object should not have previous contents, otherwise
+ *  the behavior is undefined.
+ *
+ *  @param ec Set to the error, if any occurred.
+ *
+ *  @return The number of bytes transferred to the parser.
+ */
 template<
     typename SyncReadStream,
     typename DynamicBuffer,
@@ -73,6 +100,33 @@ read(SyncReadStream & stream, DynamicBuffer & buffer, response<Body, Sequence> &
 }
 
 
+/**
+ *  Read a complete message from a stream.
+ *
+ *  This function is used to read a complete message from a stream.
+ *  The call will block until one of the following conditions is true:
+ *
+ *  @li The entire message is read.
+ *
+ *  @li An error occurs.
+ *
+ *  @param stream The stream from which the data is to be read.
+ *  The type must support the @b SyncReadStream concept.
+ *
+ *  @param buffer A @b DynamicBuffer holding additional bytes
+ *  read by the implementation from the stream. This is both
+ *  an input and an output parameter; on entry, any data in the
+ *  dynamic buffer's input sequence will be given to the parser
+ *  first.
+ *
+ *  @param msg An object in which to store the message contents.
+ *  This object should not have previous contents, otherwise
+ *  the behavior is undefined.
+ *
+ *  @return The number of bytes transferred to the parser.
+ *
+ *  @throws system_error Thrown on failure.
+ */
 template<
     typename SyncReadStream,
     typename DynamicBuffer,
