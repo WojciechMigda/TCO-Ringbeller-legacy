@@ -50,6 +50,9 @@ int main(int argc, char **argv)
 
     std::string device;
 
+    // TODO modem params
+    // TODO timeouts?
+
     auto at_ok = (
         clipp::command("at_ok").set(do_at_ok, true).doc("Execute AT/OK scenario (synchronous API)")
     );

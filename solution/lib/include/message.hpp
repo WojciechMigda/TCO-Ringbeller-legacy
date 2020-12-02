@@ -4,6 +4,7 @@
 #define LIB_INCLUDE_MESSAGE_HPP_
 
 #include <string>
+#include <vector>
 
 
 namespace Ringbeller
@@ -13,6 +14,12 @@ namespace Ringbeller
 struct string_body
 {
     using value_type = std::string;
+};
+
+struct vector_sequence
+{
+    template<typename T>
+    using value_type = std::vector<T>;
 };
 
 
@@ -44,6 +51,34 @@ using write_request = request<false, false, false, true, false, Body>;
 
 template<typename Body>
 using exec_request = request<false, false, false, false, true, Body>;
+
+
+enum result_code
+{
+    ok,
+    connect,
+    ring,
+    no_carrier,
+    error,
+    no_dialtone,
+    busy,
+    no_answer,
+    cme_error,
+    cms_error,
+    command_not_support,
+    too_may_parameters,
+    unrecognized
+};
+
+template<typename Text, typename Sequence>
+struct response
+{
+    using text_type = typename Text::value_type;
+
+    enum result_code result_code;
+    text_type rc_text;
+    typename Sequence::template value_type<text_type> body;
+};
 
 
 }  // namespace Ringbeller
