@@ -55,6 +55,7 @@ using exec_request = request<false, false, false, false, true, Body>;
 
 enum result_code
 {
+    none,
     ok,
     connect,
     ring,
@@ -66,8 +67,7 @@ enum result_code
     cme_error,
     cms_error,
     command_not_support,
-    too_may_parameters,
-    unrecognized
+    too_may_parameters
 };
 
 template<typename Text, typename Sequence>

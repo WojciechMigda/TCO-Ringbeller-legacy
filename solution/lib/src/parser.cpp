@@ -5,9 +5,9 @@
 
 #include "boost/spirit/home/x3.hpp"
 
+// debug URL: http://coliru.stacked-crooked.com/a/9f5adbc76755f892
 
-
-auto grammar_spec = [](auto & rc_setter)
+auto grammar_spec = [](auto & rc_setter, auto & rc_text_setter, auto & body_appender)
 {
     namespace x3 = boost::spirit::x3;
     using x3::lit;
@@ -26,15 +26,6 @@ auto grammar_spec = [](auto & rc_setter)
     auto set_command_not_support = [&](auto &){ rc_setter(Ringbeller::result_code::command_not_support); };
     auto set_too_many_parameters = [&](auto &){ rc_setter(Ringbeller::result_code::too_may_parameters); };
 
-//    auto save = [&](auto & ctx)
-//    {
-//        auto val = (_attr(ctx));
-//        (void)val;
-//        std::string s(val.begin(), val.end());
-//        (void)s;
-//        fmt::print("save [{}]", s);
-//    };
-
     /*
      * cheat sheet:
      * + : >=1 times
@@ -49,12 +40,11 @@ auto grammar_spec = [](auto & rc_setter)
                                           // It gets funky if it's changed.
                                           // Hardcoded for now.
 
-//    static auto const text = x3::raw[+(!CR)];
-    static auto const text = +(!CR);
+    static auto const text = x3::raw[+(char_ - CR)];
 
     // these are also a matter of device configuration, smh
     auto const OK = lit("OK")[set_ok];
-    auto const CONNECT = lit("CONNECT")[set_connect] >> -text;
+    auto const CONNECT = lit("CONNECT")[set_connect] >> -text[rc_text_setter];
     auto const RING = lit("RING")[set_ring];
     auto const NO_CARRIER = lit("NO CARRIER")[set_no_carrier];
     auto const ERROR = lit("ERROR")[set_error];
@@ -62,16 +52,15 @@ auto grammar_spec = [](auto & rc_setter)
     auto const BUSY = lit("BUSY")[set_busy];
     auto const NO_ANSWER = lit("NO ANSWER")[set_no_answer];
 
-    auto const CME_ERROR = lit("+CME ERROR: ")[set_cme_error] >> text;
-    auto const CMS_ERROR = lit("+CMS ERROR: ")[set_cms_error] >> text;
+    auto const CME_ERROR = lit("+CME ERROR: ")[set_cme_error] >> text[rc_text_setter];
+    auto const CMS_ERROR = lit("+CMS ERROR: ")[set_cms_error] >> text[rc_text_setter];
     auto const COMMAND_NOT_SUPPORT = lit("COMMAND NOT SUPPORT")[set_command_not_support];
     auto const TOO_MANY_PARAMETERS = lit("TOO MANY PARAMETERS")[set_too_many_parameters];
 
 
-    static auto const RESPONSE_LINE = CRLF >> text/*[save]*/ >> CRLF;
-    //static auto const RESPONSE_LINES = +RESPONSE_LINE;
+    auto const RESPONSE_LINE = text[body_appender] >> CRLF;
 
-    static auto FINAL_RESULT_CODE =
+    auto FINAL_RESULT_CODE =
         CRLF >>
         (
             OK | CONNECT | RING | NO_CARRIER | ERROR | NO_DIALTONE |
@@ -80,9 +69,9 @@ auto grammar_spec = [](auto & rc_setter)
             COMMAND_NOT_SUPPORT | TOO_MANY_PARAMETERS
         ) >> CRLF;
 
-    static auto response =
+    auto response =
         FINAL_RESULT_CODE
-        | (+RESPONSE_LINE >> FINAL_RESULT_CODE);
+        | (CRLF >> +RESPONSE_LINE >> FINAL_RESULT_CODE);
 
     return response;
 };
@@ -98,11 +87,12 @@ match_condition(asio_buf_iterator begin, asio_buf_iterator end)
     using ascii::blank;
 
     auto nop1 = [](auto &&){};
+    auto nop2 = [](auto &&){};
 
     bool ok = phrase_parse(
         begin,
         end,
-        grammar_spec(nop1),
+        grammar_spec(nop1, nop2, nop2),
         blank
     );
 
@@ -124,11 +114,21 @@ parse_response(
     using ascii::blank;
 
     auto rc_setter = [&](auto && rc){ result_code = rc; };
+    auto rc_text_setter = [&](auto & ctx)
+    {
+        auto val = _attr(ctx);
+        result_text = std::string(val.begin(), val.end());
+    };
+    auto body_appender = [&](auto & ctx)
+    {
+        auto val = _attr(ctx);
+        body.emplace_back(val.begin(), val.end());
+    };
 
     bool ok = phrase_parse(
         begin,
         end,
-        grammar_spec(rc_setter),
+        grammar_spec(rc_setter, rc_text_setter, body_appender),
         blank
     );
 

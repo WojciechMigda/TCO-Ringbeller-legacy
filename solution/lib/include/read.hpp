@@ -5,7 +5,6 @@
 
 #include "parser.hpp"
 
-#include "at/response.hpp"
 #include "asio_types.hpp"
 #include "logging.hpp"
 
@@ -45,7 +44,7 @@ read(SyncReadStream & stream, DynamicBuffer & buffer, response<Body, Sequence> &
     {
         auto b = buffer.data();
 
-        result_code rc = result_code::unrecognized;
+        result_code rc(result_code::none);
         std::string rc_text;
         std::vector<std::string> body;
 

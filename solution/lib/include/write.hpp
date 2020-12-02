@@ -36,25 +36,25 @@ std::string to_string(request<isSet, isXTest, isXRead, isXWrite, isXExec, Body> 
     {
         rv += fmt::format("S{}={}", msg.command, msg.args);
     }
-
-    if (isXTest)
+    else if (isXTest)
     {
         rv += fmt::format("+{}=?", msg.command);
     }
-
-    if (isXRead)
+    else if (isXRead)
     {
         rv += fmt::format("+{}?", msg.command);
     }
-
-    if (isXWrite)
+    else if (isXWrite)
     {
         rv += fmt::format("+{}={}", msg.command, msg.args);
     }
-
-    if (isXExec)
+    else if (isXExec)
     {
         rv += fmt::format("+{}", msg.command);
+    }
+    else
+    {
+        rv += fmt::format("{}{}", msg.command, msg.args);
     }
 
     spdlog::trace("to_string serialized message to {}", rv);

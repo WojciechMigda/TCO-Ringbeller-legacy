@@ -1,4 +1,4 @@
-#include "messages/at.hpp"
+#include "messages/ati.hpp"
 #include "message.hpp"
 #include "write.hpp"
 #include "read.hpp"
@@ -9,7 +9,7 @@
 #include <boost/asio/streambuf.hpp>
 
 
-int run_at_ok(std::string const & device)
+int run_ati(std::string const & device)
 {
     boost::system::error_code ec;
 
@@ -25,7 +25,7 @@ int run_at_ok(std::string const & device)
         return -1;
     }
 
-    auto command = Ringbeller::make_at();
+    auto command = Ringbeller::make_ati();
 
     // Write to the modem
 

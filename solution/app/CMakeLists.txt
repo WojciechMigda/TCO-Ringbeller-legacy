@@ -8,6 +8,7 @@ add_executable( ${APP} "src/dummy.cpp" )
 target_sources( ${APP} PRIVATE
   "src/main.cpp"
   "src/do_at_ok.cpp"
+  "src/do_ati.cpp"
 )
 
 include_directories( "src" )

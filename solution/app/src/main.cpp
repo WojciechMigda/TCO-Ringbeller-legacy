@@ -1,4 +1,5 @@
 #include "do_at_ok.hpp"
+#include "do_ati.hpp"
 
 #include "clipp.hpp"
 #include "spdlog/spdlog.h"
@@ -91,6 +92,10 @@ int main(int argc, char **argv)
         else if (do_ati)
         {
             spdlog::info("Executing ATI scenario");
+
+            auto rv = run_ati(device);
+
+            return rv;
         }
     }
 
