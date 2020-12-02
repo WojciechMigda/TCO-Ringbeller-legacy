@@ -18,6 +18,7 @@ endif()
 
 set(SOURCES
     src/poc.cpp
+    src/parser.cpp
 )
 
 add_library( ringbeller_ObjLib OBJECT src/dummy.cpp )
@@ -33,10 +34,16 @@ target_include_directories(ringbeller_ObjLib
 
 target_compile_features(ringbeller_ObjLib PRIVATE cxx_rvalue_references)
 
+include_directories(
+  "$<TARGET_PROPERTY:fmt,MY_INCLUDE_DIRS>" )
+include_directories(
+  "$<TARGET_PROPERTY:spdlog,MY_INCLUDE_DIRS>" )
 target_include_directories( ringbeller_ObjLib PRIVATE ${Boost_INCLUDE_DIRS})
 
 target_compile_features( ringbeller_ObjLib
     PUBLIC $<TARGET_PROPERTY:Boost::system,INTERFACE_COMPILE_FEATURES> )
+
+target_compile_definitions( ringbeller_ObjLib PRIVATE BOOST_ASIO_DISABLE_THREADS )
 
 ################################################################################
 
