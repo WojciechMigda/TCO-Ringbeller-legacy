@@ -2,6 +2,10 @@
 #include "message.hpp"
 #include "write.hpp"
 #include "read.hpp"
+#include "serial_port_setup.hpp"
+
+#include "spdlog/spdlog.h"
+#include "fmt/core.h"
 
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/io_service.hpp>
@@ -9,7 +13,7 @@
 #include <boost/asio/streambuf.hpp>
 
 
-int run_ati(std::string const & device)
+int run_ati(std::string const & device, serial_port_param_set_t const & param_set)
 {
     boost::system::error_code ec;
 
@@ -25,6 +29,8 @@ int run_ati(std::string const & device)
         return -1;
     }
 
+    setup_serial_port(sp, param_set);
+
     auto command = Ringbeller::make_ati();
 
     // Write to the modem
@@ -37,7 +43,7 @@ int run_ati(std::string const & device)
         return -1;
     }
 
-    spdlog::info("Sent {} bytes to the modem", wb);
+    fmt::print("Sent {} bytes to the modem\n", wb);
 
     // Read from the modem
 
@@ -53,24 +59,24 @@ int run_ati(std::string const & device)
     }
 
     // Present the response
-    spdlog::info("Read {} bytes from the modem", rb);
+    fmt::print("Read {} bytes from the modem\n", rb);
 
-    spdlog::info("Response result code: {}", response.result_code);
+    fmt::print("Response result code: {}\n", response.result_code);
     if (not response.rc_text.empty())
     {
-        spdlog::info("Response result text: {}", response.rc_text);
+        fmt::print("Response result text: {}\n", response.rc_text);
     }
     else
     {
-        spdlog::info("Response result text is empty");
+        fmt::print("Response result text is empty\n");
     }
     if (response.body.empty())
     {
-        spdlog::info("Response body is empty");
+        fmt::print("Response body is empty\n");
     }
     else for (auto const & line : response.body)
     {
-        spdlog::info("Response body: {}", line);
+        fmt::print("Response body: {}\n", line);
     }
 
     return 0;

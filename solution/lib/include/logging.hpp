@@ -13,7 +13,7 @@
 
 #define FN_LEAVE() spdlog::trace("Fn Leave: {}", BOOST_CURRENT_FUNCTION)
 
-static inline void LOG_CHECK_EC(boost::system::error_code & ec)
+static inline void LOG_CHECK_EC(boost::system::error_code const & ec)
 {
     if (ec)
     {
@@ -22,7 +22,7 @@ static inline void LOG_CHECK_EC(boost::system::error_code & ec)
 }
 
 
-static inline void LOG_EXCEPTION(boost::system::error_code & ec)
+static inline void LOG_EXCEPTION(boost::system::error_code const & ec)
 {
     spdlog::error("Throwing exception: {}", ec.message());
 }

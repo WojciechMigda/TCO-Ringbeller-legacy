@@ -9,6 +9,9 @@ target_sources( ${APP} PRIVATE
   "src/main.cpp"
   "src/do_at_ok.cpp"
   "src/do_ati.cpp"
+  "src/do_at_cops.cpp"
+
+  "src/serial_port_setup.cpp"
 )
 
 include_directories( "src" )

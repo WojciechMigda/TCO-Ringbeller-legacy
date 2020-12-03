@@ -3,7 +3,6 @@
 #ifndef LIB_INCLUDE_MESSAGES_ATI_HPP_
 #define LIB_INCLUDE_MESSAGES_ATI_HPP_
 
-
 #include "message.hpp"
 
 
@@ -23,7 +22,6 @@ basic_request<Body> make_ati()
 
 
 }  // namespace Ringbeller
-
 
 
 #endif /* LIB_INCLUDE_MESSAGES_ATI_HPP_ */

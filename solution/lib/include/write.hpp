@@ -13,6 +13,7 @@
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/write.hpp>
+#include <boost/asio/async_result.hpp>
 #include <boost/throw_exception.hpp>
 #include <boost/system/system_error.hpp>
 
@@ -151,8 +152,64 @@ write(SyncWriteStream & stream, request<isSet, isXTest, isXRead, isXWrite, isXEx
 }
 
 
-}  // namespace Ringbeller
+/**
+ * This function is used to asynchronously write a certain number of bytes of
+ * data to a stream. The function call always returns immediately. The
+ * asynchronous operation will continue until one of the following conditions
+ * is true:
+ *
+ * @li All of the data in the supplied request has been written.
+ *
+ * @li An error occurred.
+ *
+ * @param s The stream to which the data is to be written. The type must support
+ * the AsyncWriteStream concept.
+ *
+ * @param b A request object from which data will be written. Ownership
+ * of the streambuf is retained by the caller, which must guarantee that it
+ * remains valid until the handler is called.
+ *
+ * @param handler The handler to be called when the write operation completes.
+ * Copies will be made of the handler as required. The function signature of the
+ * handler must be:
+ * @code void handler(
+ *   const boost::system::error_code& error, // Result of operation.
+ *
+ *   std::size_t bytes_transferred           // Number of bytes written from the
+ *                                           // buffers. If an error occurred,
+ *                                           // this will be less than the sum
+ *                                           // of the buffer sizes.
+ * ); @endcode
+ * Regardless of whether the asynchronous operation completes immediately or
+ * not, the handler will not be invoked from within this function. Invocation of
+ * the handler will be performed in a manner equivalent to using
+ * boost::asio::io_service::post().
+ */
+template<
+    typename AsyncWriteStream,
+    bool isSet, bool isXTest, bool isXRead, bool isXWrite, bool isXExec,
+    typename Body,
+    typename WriteHandler
+>
+BOOST_ASIO_INITFN_RESULT_TYPE(WriteHandler,
+    void (boost::system::error_code, std::size_t))
+async_write(
+    AsyncWriteStream & stream,
+    request<isSet, isXTest, isXRead, isXWrite, isXExec, Body> const & msg,
+    WriteHandler && handler)
+{
+    FN_ENTER();
 
+    std::string s = to_string(msg);
+
+    boost::asio::async_write(
+        stream, boost::asio::buffer(s, s.size()), std::move(handler));
+
+    FN_LEAVE();
+}
+
+
+}  // namespace Ringbeller
 
 
 #endif /* LIB_INCLUDE_WRITE_HPP_ */
