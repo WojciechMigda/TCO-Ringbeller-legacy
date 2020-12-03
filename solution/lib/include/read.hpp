@@ -102,7 +102,7 @@ read(SyncReadStream & stream, DynamicBuffer & buffer, response<Body, Sequence> &
 {
     FN_ENTER();
 
-    std::size_t bytes_read = boost::asio::read_until(stream, buffer, match_condition, ec);
+    std::size_t bytes_read = boost::asio::read_until(stream, buffer, detail::match_condition, ec);
 
     buffer.commit(bytes_read);
 
@@ -190,7 +190,7 @@ async_read(
 {
     FN_ENTER();
 
-    boost::asio::async_read_until(stream, buffer, match_condition,
+    boost::asio::async_read_until(stream, buffer, detail::match_condition,
         [handler{std::move(handler)}, &buffer, &msg](boost::system::error_code const & ec, std::size_t rb)
         {
             FN_ENTER();

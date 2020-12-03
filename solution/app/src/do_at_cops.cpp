@@ -38,7 +38,6 @@ int run_at_cops(std::string const & device, serial_port_param_set_t const & para
     boost::asio::streambuf buf;
     Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
 
-    // Write to the modem
 
     auto read_handler = [&response](boost::system::error_code const & ec, std::size_t rb)
     {
@@ -88,6 +87,8 @@ int run_at_cops(std::string const & device, serial_port_param_set_t const & para
         FN_LEAVE();
     };
 
+
+    // initiate asynchronous sequence with write request
     Ringbeller::async_write(sp, command, write_handler);
 
     // run the event loop until completion

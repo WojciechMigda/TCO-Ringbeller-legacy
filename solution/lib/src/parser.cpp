@@ -7,6 +7,15 @@
 
 // debug URL: http://coliru.stacked-crooked.com/a/9f5adbc76755f892
 
+
+namespace Ringbeller
+{
+
+
+namespace detail
+{
+
+
 auto grammar_spec = [](auto & rc_setter, auto & rc_text_setter, auto & body_appender)
 {
     namespace x3 = boost::spirit::x3;
@@ -104,7 +113,7 @@ std::pair<asio_buf_iterator, bool>
 parse_response(
     asio_buf_iterator begin,
     asio_buf_iterator end,
-    Ringbeller::result_code & result_code,
+    ::Ringbeller::result_code & result_code,
     std::string & result_text,
     std::vector<std::string> & body)
 {
@@ -134,3 +143,9 @@ parse_response(
 
     return std::make_pair(begin, ok);
 }
+
+
+}  // namespace detail
+
+
+}  // namespace Ringbeller
