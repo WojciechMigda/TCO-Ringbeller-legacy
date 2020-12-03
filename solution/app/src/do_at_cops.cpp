@@ -34,7 +34,7 @@ int run_at_cops(std::string const & device, serial_port_param_set_t const & para
 
     setup_serial_port(sp, param_set);
 
-    auto command = Ringbeller::make_at_cops_test();
+    auto command = Ringbeller::make_at_cops_read();
     boost::asio::streambuf buf;
     Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
 

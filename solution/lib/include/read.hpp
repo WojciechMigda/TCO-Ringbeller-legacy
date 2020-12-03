@@ -18,10 +18,51 @@
 #include <string>
 #include <iterator>
 #include <algorithm>
+#include <utility>
 
 
 namespace Ringbeller
 {
+
+
+namespace detail
+{
+
+
+template<
+    typename DynamicBuffer,
+    typename Body,
+    typename Sequence>
+void populate_response_from_buffer(
+    DynamicBuffer const & buffer,
+    response<Body, Sequence> & msg)
+{
+    auto b = buffer.data();
+
+    result_code rc(result_code::none);
+    std::string rc_text;
+    std::vector<std::string> body;
+
+    parse_response(
+        boost::asio::buffers_begin(b),
+        boost::asio::buffers_end(b),
+        rc,
+        rc_text,
+        body);
+
+    msg.result_code = rc;
+
+    std::copy(rc_text.cbegin(), rc_text.cend(), std::back_inserter(msg.rc_text));
+
+    for (auto const & ll : body)
+    {
+        auto & seq = msg.body;
+        seq.emplace(seq.end(), ll.cbegin(), ll.cend());
+    }
+}
+
+
+}
 
 
 /**
@@ -69,27 +110,7 @@ read(SyncReadStream & stream, DynamicBuffer & buffer, response<Body, Sequence> &
 
     if (not ec)
     {
-        auto b = buffer.data();
-
-        result_code rc(result_code::none);
-        std::string rc_text;
-        std::vector<std::string> body;
-
-        parse_response(
-            boost::asio::buffers_begin(b),
-            boost::asio::buffers_end(b),
-            rc,
-            rc_text,
-            body);
-
-        msg.result_code = rc;
-
-        std::copy(rc_text.cbegin(), rc_text.cend(), std::back_inserter(msg.rc_text));
-        for (auto const & ll : body)
-        {
-            auto & seq = msg.body;
-            seq.emplace(seq.end(), ll.cbegin(), ll.cend());
-        }
+        detail::populate_response_from_buffer(buffer, msg);
     }
 
     buffer.consume(bytes_read);
@@ -150,7 +171,49 @@ read(SyncReadStream & stream, DynamicBuffer & buffer, response<Body, Sequence> &
     FN_LEAVE();
 
     return bytes_transferred;
+}
 
+
+template<
+    typename AsyncReadStream,
+    typename DynamicBuffer,
+    typename Body,
+    typename Sequence,
+    typename ReadHandler>
+BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
+    void(boost::system::error_code, std::size_t))
+async_read(
+    AsyncReadStream & stream,
+    DynamicBuffer & buffer,
+    response<Body, Sequence> & msg,
+    ReadHandler && handler)
+{
+    FN_ENTER();
+
+    boost::asio::async_read_until(stream, buffer, match_condition,
+        [handler{std::move(handler)}, &buffer, &msg](boost::system::error_code const & ec, std::size_t rb)
+        {
+            FN_ENTER();
+
+            LOG_CHECK_EC(ec);
+
+            buffer.commit(rb);
+
+            if (not ec)
+            {
+                detail::populate_response_from_buffer(buffer, msg);
+            }
+
+            // call user handler
+            handler(ec, rb);
+
+            buffer.consume(rb);
+
+            FN_LEAVE();
+        }
+    );
+
+    FN_LEAVE();
 }
 
 

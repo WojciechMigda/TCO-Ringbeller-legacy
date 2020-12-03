@@ -10,6 +10,9 @@ namespace Ringbeller
 {
 
 
+/*
+ * Prepare AT command
+ */
 template<typename Body = string_body>
 basic_request<Body> make_at()
 {

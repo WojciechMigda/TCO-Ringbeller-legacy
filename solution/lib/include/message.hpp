@@ -78,6 +78,12 @@ struct response
     enum result_code result_code;
     text_type rc_text;
     typename Sequence::template value_type<text_type> body;
+
+    response()
+    : result_code(none)
+    , rc_text()
+    , body()
+    {}
 };
 
 

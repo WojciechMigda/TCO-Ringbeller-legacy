@@ -25,6 +25,9 @@ namespace Ringbeller
 {
 
 
+namespace detail
+{
+
 template<
     bool isSet, bool isXTest, bool isXRead, bool isXWrite, bool isXExec,
     typename Body
@@ -66,6 +69,9 @@ std::string to_string(request<isSet, isXTest, isXRead, isXWrite, isXExec, Body> 
 }
 
 
+} // detail
+
+
 /**
  * Write a complete message to a stream.
  *
@@ -95,7 +101,7 @@ write(SyncWriteStream & stream, request<isSet, isXTest, isXRead, isXWrite, isXEx
 {
     FN_ENTER();
 
-    std::string s = to_string(msg);
+    std::string s = detail::to_string(msg);
 
     auto rv = boost::asio::write(stream, boost::asio::buffer(s, s.size()), ec);
 
@@ -200,7 +206,7 @@ async_write(
 {
     FN_ENTER();
 
-    std::string s = to_string(msg);
+    std::string s = detail::to_string(msg);
 
     boost::asio::async_write(
         stream, boost::asio::buffer(s, s.size()), std::move(handler));

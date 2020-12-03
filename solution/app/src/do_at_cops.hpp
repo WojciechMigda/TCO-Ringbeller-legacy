@@ -9,7 +9,7 @@
 
 
 /*
- * Run AT+COPS? example
+ * Run AT+COPS=? example
  */
 int run_at_cops(std::string const & device, serial_port_param_set_t const & param_set);
 

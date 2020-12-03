@@ -10,10 +10,27 @@ namespace Ringbeller
 {
 
 
+/*
+ * Prepare AT+COPS? command
+ */
 template<typename Body = string_body>
 test_request<Body> make_at_cops_test()
 {
     test_request<Body> rv;
+
+    rv.command = "COPS";
+
+    return rv;
+}
+
+
+/*
+ * Prepare AT+COPS=? command
+ */
+template<typename Body = string_body>
+read_request<Body> make_at_cops_read()
+{
+    read_request<Body> rv;
 
     rv.command = "COPS";
 
