@@ -1,6 +1,7 @@
 #include "do_at_ok.hpp"
 #include "do_ati.hpp"
 #include "do_at_cops.hpp"
+#include "do_receive_sms.hpp"
 
 #include "formatters.hpp"
 
@@ -56,6 +57,7 @@ int main(int argc, char **argv)
     bool do_at_ok = false;
     bool do_ati = false;
     bool do_at_cops = false;
+    bool do_rcv_sms = false;
 
     bool verbose = false;
     bool debug = false;
@@ -140,6 +142,10 @@ int main(int argc, char **argv)
         clipp::command("at+cops").set(do_at_cops, true).doc("Execute AT+COPS=? scenario (asynchronous API)")
     );
 
+    auto rcv_sms = (
+        clipp::command("rcv-sms").set(do_rcv_sms, true).doc("Wait and receive SMS")
+    );
+
     auto common = (
         clipp::required("--device").doc("Modem device path") & clipp::value("Path to the modem device", device),
 
@@ -167,7 +173,7 @@ int main(int argc, char **argv)
         clipp::option("--trace").set(trace, true).doc("Enable trace output, default=" + fmt::format("{}", trace))
     );
 
-    auto cli = (at_ok | ati | at_cops) & common;
+    auto cli = (at_ok | ati | at_cops | rcv_sms) & common;
 
     if (not clipp::parse(argc, argv, cli))
     {
@@ -202,6 +208,14 @@ int main(int argc, char **argv)
             fmt::print("Executing AT+COPS scenario\n");
 
             auto rv = run_at_cops(device, serial_port_param_set);
+
+            return rv;
+        }
+        else if (do_rcv_sms)
+        {
+            fmt::print("Executing \"Receive SMS\" scenario\n");
+
+            auto rv = run_receive_sms(device, serial_port_param_set);
 
             return rv;
         }

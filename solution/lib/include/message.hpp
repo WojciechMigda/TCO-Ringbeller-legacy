@@ -53,7 +53,7 @@ template<typename Body>
 using exec_request = request<false, false, false, false, true, Body>;
 
 
-enum result_code
+enum class result_code
 {
     none,
     ok,
@@ -80,7 +80,7 @@ struct response
     typename Sequence::template value_type<text_type> body;
 
     response()
-    : result_code(none)
+    : result_code(result_code::none)
     , rc_text()
     , body()
     {}

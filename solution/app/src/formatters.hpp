@@ -20,7 +20,7 @@ template <>
 struct fmt::formatter<boost::asio::serial_port::baud_rate> : public fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(boost::asio::serial_port::baud_rate const & v, FormatContext & ctx) //-> decltype(ctx.out())
+    auto format(boost::asio::serial_port::baud_rate const & v, FormatContext & ctx)
     {
         return fmt::formatter<std::string>::format(fmt::format("baud_rate::{}", v.value()), ctx);
     }
@@ -34,7 +34,7 @@ template <>
 struct fmt::formatter<boost::asio::serial_port::flow_control> : public fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(boost::asio::serial_port::flow_control const & v, FormatContext & ctx) //-> decltype(ctx.out())
+    auto format(boost::asio::serial_port::flow_control const & v, FormatContext & ctx)
     {
         std::string name = "unknown";
 
@@ -57,7 +57,7 @@ template <>
 struct fmt::formatter<boost::asio::serial_port::parity> : public fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(boost::asio::serial_port::parity const & v, FormatContext & ctx) //-> decltype(ctx.out())
+    auto format(boost::asio::serial_port::parity const & v, FormatContext & ctx)
     {
         std::string name = "unknown";
 
@@ -80,7 +80,7 @@ template <>
 struct fmt::formatter<boost::asio::serial_port::stop_bits> : public fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(boost::asio::serial_port::stop_bits const & v, FormatContext & ctx) //-> decltype(ctx.out())
+    auto format(boost::asio::serial_port::stop_bits const & v, FormatContext & ctx)
     {
         std::string name = "unknown";
 
@@ -103,7 +103,7 @@ template <>
 struct fmt::formatter<boost::asio::serial_port::character_size> : public fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(boost::asio::serial_port::character_size const & v, FormatContext & ctx) //-> decltype(ctx.out())
+    auto format(boost::asio::serial_port::character_size const & v, FormatContext & ctx)
     {
         return fmt::formatter<std::string>::format(fmt::format("character_size::{}", v.value()), ctx);
     }

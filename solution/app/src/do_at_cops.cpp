@@ -1,3 +1,4 @@
+#include "result_code_formatter.hpp"
 #include "messages/at_cops.hpp"
 #include "message.hpp"
 #include "write.hpp"
@@ -39,29 +40,37 @@ int run_at_cops(std::string const & device, serial_port_param_set_t const & para
     Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
 
 
-    auto read_handler = [&response](boost::system::error_code const & ec, std::size_t rb)
+    auto read_handler = [&response, &device](boost::system::error_code const & ec, std::size_t rb)
     {
         FN_ENTER();
 
-        // Present the response
-        fmt::print("Read {} bytes from the modem\n", rb);
-
-        fmt::print("Response result code: {}\n", response.result_code);
-        if (not response.rc_text.empty())
+        if (ec)
         {
-            fmt::print("Response result text: {}\n", response.rc_text);
+            spdlog::error("Asynchronous read from device {} completed with an error: {}",
+                device, ec.message());
         }
         else
         {
-            fmt::print("Response result text is empty\n");
-        }
-        if (response.body.empty())
-        {
-            fmt::print("Response body is empty\n");
-        }
-        else for (auto const & line : response.body)
-        {
-            fmt::print("Response body: {}\n", line);
+            // Present the response
+            fmt::print("Read {} bytes from the modem\n", rb);
+
+            fmt::print("Response result code: {}\n", response.result_code);
+            if (not response.rc_text.empty())
+            {
+                fmt::print("Response result text: {}\n", response.rc_text);
+            }
+            else
+            {
+                fmt::print("Response result text is empty\n");
+            }
+            if (response.body.empty())
+            {
+                fmt::print("Response body is empty\n");
+            }
+            else for (auto const & line : response.body)
+            {
+                fmt::print("Response body: {}\n", line);
+            }
         }
 
         FN_LEAVE();

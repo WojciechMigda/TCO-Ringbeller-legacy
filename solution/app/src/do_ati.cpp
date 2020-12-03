@@ -1,3 +1,4 @@
+#include "result_code_formatter.hpp"
 #include "messages/ati.hpp"
 #include "message.hpp"
 #include "write.hpp"
