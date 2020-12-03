@@ -13,6 +13,14 @@
 
 #define FN_LEAVE() spdlog::trace("Fn Leave: {}", BOOST_CURRENT_FUNCTION)
 
+
+namespace Ringbeller
+{
+
+
+/*
+ * Utility for logging boost::system::error_code
+ */
 static inline void LOG_CHECK_EC(boost::system::error_code const & ec)
 {
     if (ec)
@@ -22,10 +30,16 @@ static inline void LOG_CHECK_EC(boost::system::error_code const & ec)
 }
 
 
+/*
+ * Utility for logging exception to be thrown
+ */
 static inline void LOG_EXCEPTION(boost::system::error_code const & ec)
 {
     spdlog::error("Throwing exception: {}", ec.message());
 }
+
+
+}  // namespace Ringbeller
 
 
 #endif /* LIB_INCLUDE_LOGGING_HPP_ */
