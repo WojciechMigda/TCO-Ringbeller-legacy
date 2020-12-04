@@ -61,7 +61,7 @@ std::string to_string(request<isSet, isXTest, isXRead, isXWrite, isXExec, Body> 
         rv += fmt::format("{}{}", msg.command, msg.args);
     }
 
-    spdlog::trace("to_string serialized message to {}", rv);
+    spdlog::debug("to_string serialized message to {}", rv);
 
     rv += "\r\n";
 
