@@ -88,7 +88,7 @@ int run_send_sms(
             buf.consume(rb);
 
             bool prompt_received =
-                response.result_code == Ringbeller::result_code::none and
+                response.rc == Ringbeller::result_code::none and
                 response.body.size() and
                 response.body.front().rfind("> ") == 0;
 

@@ -50,7 +50,7 @@ void populate_response_from_buffer(
         rc_text,
         body);
 
-    msg.result_code = rc;
+    msg.rc = rc;
 
     std::copy(rc_text.cbegin(), rc_text.cend(), std::back_inserter(msg.rc_text));
 

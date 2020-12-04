@@ -54,7 +54,7 @@ int run_at_cops(std::string const & device, serial_port_param_set_t const & para
             // Present the response
             fmt::print("Read {} bytes from the modem\n", rb);
 
-            fmt::print("Response result code: {}\n", response.result_code);
+            fmt::print("Response result code: {}\n", response.rc);
             if (not response.rc_text.empty())
             {
                 fmt::print("Response result text: {}\n", response.rc_text);

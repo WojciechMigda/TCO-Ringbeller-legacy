@@ -75,12 +75,12 @@ struct response
 {
     using text_type = typename Text::value_type;
 
-    enum result_code result_code;
+    enum result_code rc;
     text_type rc_text;
     typename Sequence::template value_type<text_type> body;
 
     response()
-    : result_code(result_code::none)
+    : rc(result_code::none)
     , rc_text()
     , body()
     {}
