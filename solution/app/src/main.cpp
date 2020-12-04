@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 
             rv = run_receive_vcall(device, serial_port_param_set);
         }
-        else if (do_send_sms)
+        else if (do_make_call)
         {
             fmt::print("Executing \"Make voice call\" scenario\n");
             fmt::print("Voice call target: {}\n", da);
