@@ -74,12 +74,20 @@ Implemented commands allow to execute provided examples. These are:
 * `at_ok` - simple synchronous AT / OK scenario, useful for basic connectivity check.
 * `ati` - synchronous `ATI` scenario. It demonstrates reception of more complex response.
 * `at+cops` - asynchronous example that executes `AT+COPS=?` read AT command.
-* `rcv_sms` - asynchronous example in which modem is configured to receive unsolicited notifications
+* `rcv-sms` - asynchronous example in which modem is configured to receive unsolicited notifications
 about incoming SMSs (`+CMT`), and then waits fir such notification. Once received the notifiction is presented to the user. It contains basic SMS parameters, including SMS body.
-* `send_sms` - asynchronous example which demontrates how to send outbound SMS. The user can pass
+* `send-sms` - asynchronous example which demontrates how to send outbound SMS. The user can pass
 destination address `--da` and optional SMS text `--text`.
+* `rcv-call` - receive voice call.
+* `make-call` - make voice call.
 
 "common options" include options that control logging output level (debug, trace, info), and modem device parameters (baud rate, parity, etc.).
+
+As for SMS reception the requirement was taken literally. Operations on SMS storage (browsing, reading, writing, deleting) do not constitute SMS reception.
+For SMS storage to function as such would require periodic polling of unread messages and this is not
+a good idea.
+SMS reception means reacting to indications about received SMS the moment the network sends such notification. That is the implementation of the feature present in this solution.
+
 
 # Library
 The library is built on top of `boost::asio` and tries to mimic approaches commonly found in `boost::asio` applications. I was strongly inspired by the design of `boost::beast` library for http and websockets.

@@ -40,14 +40,16 @@ int run_send_sms(
 
     setup_serial_port(sp, param_set);
 
+    Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
+
     fmt::print("Setting up SMS format as \"text\"\n");
-    if (int rv = execute(device, sp, Ringbeller::make_at_cmgf_write("1")))
+    if (int rv = execute(device, sp, Ringbeller::make_at_cmgf_write("1"), response))
     {
         return rv;
     }
 
     fmt::print("Setting up GSM encoding\n");
-    if (int rv = execute(device, sp, Ringbeller::make_at_cscs_write("\"GSM\"")))
+    if (int rv = execute(device, sp, Ringbeller::make_at_cscs_write("\"GSM\""), response))
     {
         return rv;
     }
@@ -55,7 +57,6 @@ int run_send_sms(
     fmt::print("Sending SMS\n");
 
     boost::asio::streambuf buf;
-    Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
 
     auto text_write_handler = [&](boost::system::error_code const & ec, std::size_t wb)
     {

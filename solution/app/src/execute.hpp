@@ -26,7 +26,8 @@ template<
 int execute(
     std::string const & device,
     boost::asio::serial_port & sp,
-    Ringbeller::request<isSet, isXTest, isXRead, isXWrite, isXExec, Body> const & command)
+    Ringbeller::request<isSet, isXTest, isXRead, isXWrite, isXExec, Body> const & command,
+    Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> & response)
 {
     boost::system::error_code ec;
 
@@ -45,7 +46,6 @@ int execute(
     // Read from the modem
 
     boost::asio::streambuf buf;
-    Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
 
     auto rb = Ringbeller::read(sp, buf, response, ec);
 

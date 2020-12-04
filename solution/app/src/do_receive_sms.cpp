@@ -39,20 +39,22 @@ int run_receive_sms(std::string const & device, serial_port_param_set_t const & 
 
     setup_serial_port(sp, param_set);
 
+    Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
+
     fmt::print("Setting up SMS format as \"text\"\n");
-    if (int rv = execute(device, sp, Ringbeller::make_at_cmgf_write("1")))
+    if (int rv = execute(device, sp, Ringbeller::make_at_cmgf_write("1"), response))
     {
         return rv;
     }
 
     fmt::print("Setting up GSM encoding\n");
-    if (int rv = execute(device, sp, Ringbeller::make_at_cscs_write("\"GSM\"")))
+    if (int rv = execute(device, sp, Ringbeller::make_at_cscs_write("\"GSM\""), response))
     {
         return rv;
     }
 
     fmt::print("Setting up reception of unsolicited SMS notifications (+CMT)\n");
-    if (int rv = execute(device, sp, Ringbeller::make_at_cnmi_write("1,2,0,0,0")))
+    if (int rv = execute(device, sp, Ringbeller::make_at_cnmi_write("1,2,0,0,0"), response))
     {
         return rv;
     }
@@ -60,8 +62,6 @@ int run_receive_sms(std::string const & device, serial_port_param_set_t const & 
     fmt::print("Waiting for incoming SMS notification (press Ctrl-C to terminate)\n");
 
     boost::asio::streambuf buf;
-    Ringbeller::response<Ringbeller::string_body, Ringbeller::vector_sequence> response;
-
 
     std::function<
         std::function<void(boost::system::error_code const & , std::size_t )>(void)
