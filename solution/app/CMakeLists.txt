@@ -12,6 +12,7 @@ target_sources( ${APP} PRIVATE
   "src/do_at_cops.cpp"
 
   "src/do_receive_sms.cpp"
+  "src/do_send_sms.cpp"
 
   "src/serial_port_setup.cpp"
 )

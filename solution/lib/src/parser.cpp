@@ -66,6 +66,7 @@ auto grammar_spec = [](auto & rc_setter, auto & rc_text_setter, auto & body_appe
     auto const COMMAND_NOT_SUPPORT = lit("COMMAND NOT SUPPORT")[set_command_not_support];
     auto const TOO_MANY_PARAMETERS = lit("TOO MANY PARAMETERS")[set_too_many_parameters];
 
+    auto const PROMPT = CRLF >> x3::raw["> "][body_appender];
 
     auto const RESPONSE_LINE = text[body_appender] >> CRLF;
 
@@ -80,7 +81,8 @@ auto grammar_spec = [](auto & rc_setter, auto & rc_text_setter, auto & body_appe
 
     auto response =
         FINAL_RESULT_CODE
-        | (CRLF >> +RESPONSE_LINE >> FINAL_RESULT_CODE);
+        | (CRLF >> +RESPONSE_LINE >> FINAL_RESULT_CODE)
+        | PROMPT;
 
     return response;
 };
@@ -97,6 +99,8 @@ match_condition(asio_buf_iterator begin, asio_buf_iterator end)
 
     auto nop1 = [](auto &&){};
     auto nop2 = [](auto &&){};
+
+    spdlog::debug("match_condition sz:{} range:[{}]", std::distance(begin, end), std::string(begin, end));
 
     bool ok = phrase_parse(
         begin,
