@@ -81,7 +81,7 @@ auto grammar_spec = [](auto & rc_setter, auto & rc_text_setter, auto & body_appe
 
     auto response =
         FINAL_RESULT_CODE
-        | (CRLF >> +RESPONSE_LINE >> FINAL_RESULT_CODE)
+        | (CRLF >> +RESPONSE_LINE >> -FINAL_RESULT_CODE)
         | PROMPT;
 
     return response;
