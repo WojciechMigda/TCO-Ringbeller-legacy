@@ -14,6 +14,9 @@ target_sources( ${APP} PRIVATE
   "src/do_receive_sms.cpp"
   "src/do_send_sms.cpp"
 
+  "src/do_receive_vcall.cpp"
+  "src/do_make_vcall.cpp"
+
   "src/serial_port_setup.cpp"
 )
 

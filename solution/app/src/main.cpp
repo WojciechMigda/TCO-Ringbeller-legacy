@@ -2,6 +2,9 @@
 #include "do_ati.hpp"
 #include "do_at_cops.hpp"
 #include "do_receive_sms.hpp"
+#include "do_send_sms.hpp"
+#include "do_make_vcall.hpp"
+#include "do_receive_vcall.hpp"
 
 #include "formatters.hpp"
 
@@ -58,6 +61,12 @@ int main(int argc, char **argv)
     bool do_ati = false;
     bool do_at_cops = false;
     bool do_rcv_sms = false;
+    bool do_send_sms = false;
+    bool do_make_call = false;
+    bool do_rcv_call = false;
+
+    std::string da;
+    std::string sms_text("Feel the bern!");
 
     bool verbose = false;
     bool debug = false;
@@ -128,7 +137,6 @@ int main(int argc, char **argv)
     std::optional<boost::asio::serial_port::character_size> maybe_character_size;
     auto character_size_setter = [&maybe_character_size](std::string const & s){ maybe_character_size = boost::asio::serial_port::character_size(std::stoi(s)); };
 
-    // TODO timeouts?
 
     auto at_ok = (
         clipp::command("at_ok").set(do_at_ok, true).doc("Execute AT/OK scenario (synchronous API)")
@@ -142,8 +150,21 @@ int main(int argc, char **argv)
         clipp::command("at+cops").set(do_at_cops, true).doc("Execute AT+COPS=? scenario (asynchronous API)")
     );
 
-    auto rcv_sms = (
+    auto receive_sms = (
         clipp::command("rcv-sms").set(do_rcv_sms, true).doc("Wait and receive SMS")
+    );
+
+    auto send_sms = (
+        clipp::command("send-sms").set(do_send_sms, true).doc("Send SMS") & clipp::value("Destination address", da),
+        clipp::option("--text").doc(fmt::format("Set SMS text, default=\"{}\"", sms_text)) & clipp::value("SMS text to send", sms_text)
+    );
+
+    auto make_call = (
+        clipp::command("make-call").set(do_make_call, true).doc("Make voice call") & clipp::value("Destination address", da)
+    );
+
+    auto receive_call = (
+        clipp::command("rcv-call").set(do_rcv_call, true).doc("Wait and receive voice call")
     );
 
     auto common = (
@@ -173,7 +194,16 @@ int main(int argc, char **argv)
         clipp::option("--trace").set(trace, true).doc("Enable trace output, default=" + fmt::format("{}", trace))
     );
 
-    auto cli = (at_ok | ati | at_cops | rcv_sms) & common;
+    auto cli =
+        (at_ok & common) |
+        (ati & common) |
+        (at_cops & common) |
+        (receive_sms & common) |
+        (send_sms & common) |
+        (make_call & common) |
+        (receive_call & common);
+
+    int rv = 0;
 
     if (not clipp::parse(argc, argv, cli))
     {
@@ -191,37 +221,50 @@ int main(int argc, char **argv)
         {
             fmt::print("Executing AT/OK scenario\n");
 
-            auto rv = run_at_ok(device, serial_port_param_set);
-
-            return rv;
+            rv = run_at_ok(device, serial_port_param_set);
         }
         else if (do_ati)
         {
             fmt::print("Executing ATI scenario\n");
 
-            auto rv = run_ati(device, serial_port_param_set);
-
-            return rv;
+            rv = run_ati(device, serial_port_param_set);
         }
         else if (do_at_cops)
         {
             fmt::print("Executing AT+COPS scenario\n");
 
-            auto rv = run_at_cops(device, serial_port_param_set);
-
-            return rv;
+            rv = run_at_cops(device, serial_port_param_set);
         }
         else if (do_rcv_sms)
         {
             fmt::print("Executing \"Receive SMS\" scenario\n");
 
-            auto rv = run_receive_sms(device, serial_port_param_set);
+            rv = run_receive_sms(device, serial_port_param_set);
+        }
+        else if (do_send_sms)
+        {
+            fmt::print("Executing \"Send SMS\" scenario\n");
+            fmt::print("SMS target: {}\n", da);
+            fmt::print("SMS text: {}\n", sms_text);
 
-            return rv;
+            rv = run_send_sms(device, serial_port_param_set, da, sms_text);
+        }
+        else if (do_rcv_call)
+        {
+            fmt::print("Executing \"Receive voice call\" scenario\n");
+
+            rv = run_receive_vcall(device, serial_port_param_set);
+        }
+        else if (do_send_sms)
+        {
+            fmt::print("Executing \"Make voice call\" scenario\n");
+            fmt::print("Voice call target: {}\n", da);
+
+            rv = run_make_vcall(device, serial_port_param_set, da);
         }
     }
 
-    fmt::print("DONE\n");
+    fmt::print("DONE with status={}\n", rv);
 
-    return 0;
+    return rv;
 }
